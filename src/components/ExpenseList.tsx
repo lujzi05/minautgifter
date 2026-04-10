@@ -3,23 +3,29 @@ import { db } from "../db";
 import { CATEGORIES, type Category } from "../types";
 import { useState } from "react";
 import type { Expense } from "../types";
-
-const isValidNumber = (value: string) => {
-  if (!value.trim()) return false;
-  const number = Number(value);
-  return !Number.isNaN(number);
-};
+import { useExpenseEditor } from "../hooks/useExpenseEditor";
 
 export function ExpenseList() {
   const expenses = useLiveQuery<Expense[]>(() => db.expenses.orderBy("date").reverse().toArray(), []);
   const [selectedMonth, setSelectedMonth] = useState("2026-04");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editAmount, setEditAmount] = useState("");
-  const [editCategory, setEditCategory] = useState<Category>("general");
-  const [editNote, setEditNote] = useState("");
-  const [editDate, setEditDate] = useState(new Date().toISOString().slice(0, 10));
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const {
+    editingId,
+    editAmount,
+    setEditAmount,
+    editCategory,
+    setEditCategory,
+    editNote,
+    setEditNote,
+    editDate,
+    setEditDate,
+    errorMessage,
+    resetEditState,
+    startEditing,
+    saveEdit,
+    deleteExpense
+  } = useExpenseEditor();
 
   const filteredExpenses = expenses?.filter((e) => {
     const expenseMonth = e.date.slice(0, 7);
@@ -29,47 +35,6 @@ export function ExpenseList() {
   });
 
   const total = filteredExpenses?.reduce((sum, e) => sum + e.amount, 0);
-
-  const resetEditState = () => {
-    setEditingId(null);
-    setEditAmount("");
-    setEditCategory("general");
-    setEditNote("");
-    setEditDate(new Date().toISOString().slice(0, 10));
-    setErrorMessage("");
-  };
-
-  const startEditing = (expense: Expense) => {
-    setEditingId(expense.id);
-    setEditAmount(expense.amount.toString());
-    setEditCategory(expense.category);
-    setEditNote(expense.note ?? "");
-    setEditDate(expense.date.slice(0, 10));
-    setErrorMessage("");
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-    if (!isValidNumber(editAmount)) {
-      setErrorMessage("Amount must be a valid number.");
-      return;
-    }
-
-    await db.expenses.update(editingId, {
-      amount: Number(editAmount),
-      category: editCategory,
-      note: editNote,
-      date: new Date(editDate).toISOString()
-    });
-
-    resetEditState();
-  };
-
-  const deleteExpense = async () => {
-    if (!editingId) return;
-    await db.expenses.delete(editingId);
-    resetEditState();
-  };
 
   if (!expenses) return <p>Loading...</p>;
 
