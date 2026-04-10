@@ -10,7 +10,13 @@ export function Dashboard() {
   const categoryTotals = expenses?.reduce((acc, e) => {
     acc[e.category] = (acc[e.category] || 0) + e.amount;
     return acc;
-  }, {} as Record<Category, number>) || {};
+  }, CATEGORIES.reduce((acc, cat) => {
+    acc[cat] = 0;
+    return acc;
+  }, {} as Record<Category, number>)) || CATEGORIES.reduce((acc, cat) => {
+    acc[cat] = 0;
+    return acc;
+  }, {} as Record<Category, number>);
 
   const handleCategoryClick = (category: Category) => {
     navigate(`/add/${category}`);
