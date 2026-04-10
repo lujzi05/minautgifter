@@ -1,15 +1,22 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AddExpense } from "./components/AddExpense";
-import { DeleteExpense } from "./components/DeleteExpense";
-import { ExpenseList } from "./components/ExpenseList";
+import { Dashboard } from "./components/Dashboard";
+import { Insights } from "./components/Insights";
+import { BottomTabs } from "./components/BottomTabs";
 
 function App() {
   return (
-    <div>
-      <h1>Expense Tracker</h1>
-      <AddExpense />
-      <DeleteExpense />
-      <ExpenseList />
-    </div>
+    <Router>
+      <div style={{ paddingBottom: "4rem" }}> {/* Space for bottom tabs */}
+        <h1>Expense Tracker</h1>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/add/:category" element={<AddExpense />} />
+        </Routes>
+        <BottomTabs />
+      </div>
+    </Router>
   );
 }
 

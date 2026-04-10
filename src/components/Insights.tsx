@@ -10,7 +10,7 @@ const isValidNumber = (value: string) => {
   return !Number.isNaN(number);
 };
 
-export function ExpenseList() {
+export function Insights() {
   const expenses = useLiveQuery<Expense[]>(() => db.expenses.orderBy("date").reverse().toArray(), []);
   const [selectedMonth, setSelectedMonth] = useState("2026-04");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -75,7 +75,7 @@ export function ExpenseList() {
 
   return (
     <div>
-      <h2>Expenses</h2>
+      <h2>Insights</h2>
 
       <div>
         <input

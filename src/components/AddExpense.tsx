@@ -3,6 +3,7 @@ import { db } from "../db";
 import type { Category } from "../types";
 import { CATEGORIES } from "../types";
 import { v4 as uuidv4 } from "uuid";
+import { useParams, useNavigate } from "react-router-dom";
 
 const isValidNumber = (value: string) => {
   if (!value.trim()) return false;
@@ -11,9 +12,12 @@ const isValidNumber = (value: string) => {
 };
 
 export function AddExpense() {
+  const { category: paramCategory } = useParams<{ category: Category }>();
+  const navigate = useNavigate();
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<Category>("general");
+  const [category, setCategory] = useState<Category>(paramCategory || "general");
   const [note, setNote] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // YYYY-MM-DD
 
   const addExpense = async () => {
     if (!isValidNumber(amount)) return;
@@ -23,11 +27,12 @@ export function AddExpense() {
       amount: Number(amount),
       category,
       note,
-      date: new Date().toISOString()
+      date: new Date(date).toISOString()
     });
 
     setAmount("");
     setNote("");
+    navigate("/"); // Go back to dashboard after adding
   };
 
   const amountIsValid = isValidNumber(amount);
@@ -50,6 +55,13 @@ export function AddExpense() {
         </p>
       )}
 
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
+
+
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value as Category)}
@@ -68,6 +80,18 @@ export function AddExpense() {
       />
 
       <button onClick={addExpense}>Add</button>
+
+      <button
+        onClick={() => {
+          const d = new Date();
+          d.setDate(d.getDate() - 1);
+          setDate(d.toISOString().slice(0, 10));
+        }}
+      >
+        Yesterday
+      </button>
+
+      <button onClick={() => navigate("/")}>Cancel</button>
     </div>
   );
 }
