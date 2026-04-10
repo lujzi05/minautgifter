@@ -3,6 +3,7 @@ import { db } from "../db";
 import { CATEGORIES, type Category } from "../types";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 export function Dashboard() {
   const expenses = useLiveQuery(() => db.expenses.toArray(), []);
@@ -48,6 +49,15 @@ export function Dashboard() {
     general: "#6b7280" // gray-500
   };
 
+  // Prepare data for pie chart (only categories with expenses)
+  const pieChartData = CATEGORIES
+    .filter(category => categoryTotals[category] > 0)
+    .map(category => ({
+      name: category.charAt(0).toUpperCase() + category.slice(1),
+      value: categoryTotals[category],
+      color: categoryColors[category]
+    }));
+
   const handleCategoryClick = (category: Category) => {
     navigate(`/add/${category}`);
   };
@@ -91,7 +101,33 @@ export function Dashboard() {
         ))}
       </div>
 
-      <div style={{ marginTop: "1rem", textAlign: "center", color: "#666" }}>
+      {pieChartData.length > 0 && (
+        <div style={{ marginTop: "2rem", height: "400px" }}>
+          <h3 style={{ textAlign: "center", marginBottom: "1rem" }}>Expense Distribution for {selectedMonth}</h3>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => percent ? `${name} ${(percent * 100).toFixed(0)}%` : name}
+                outerRadius={120}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieChartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value: any) => value ? [`$${Number(value).toFixed(2)}`, 'Amount'] : ['N/A', 'Amount']} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      <div style={{ marginTop: "2rem", textAlign: "center", color: "#666" }}>
         <p>Total for {selectedMonth}: <strong>{Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0).toFixed(2)}</strong></p>
       </div>
     </div>
