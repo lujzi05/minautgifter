@@ -1,0 +1,10 @@
+div {
+  max-width: 500px;
+  margin: auto;
+  padding: 1rem;
+}
+
+input, select {
+  display: block;
+  margin-bottom: 0.5rem;
+}
