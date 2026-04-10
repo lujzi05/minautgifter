@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AddExpense } from "./components/AddExpense";
 import { Dashboard } from "./components/Dashboard";
 import { Insights } from "./components/Insights";
+import { Settings } from "./components/Settings";
 import { BottomTabs } from "./components/BottomTabs";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/add/:category" element={<AddExpense />} />
         </Routes>
         <BottomTabs />

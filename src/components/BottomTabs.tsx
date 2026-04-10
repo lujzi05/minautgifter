@@ -35,6 +35,16 @@ export function BottomTabs() {
       >
         Insights
       </Link>
+      <Link
+        to="/settings"
+        style={{
+          textDecoration: "none",
+          color: location.pathname === "/settings" ? "#007bff" : "#000",
+          fontWeight: location.pathname === "/settings" ? "bold" : "normal"
+        }}
+      >
+        Settings
+      </Link>
     </div>
   );
 }
